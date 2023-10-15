@@ -1,7 +1,31 @@
+import { useState } from "react";
 import { FaPencilAlt, FaTimes, FaUserPlus } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useLoaderData } from "react-router-dom";
+
 
 const Users = () => {
+
+    const loadedUsers = useLoaderData();
+    const  [users, setUsers]  = useState(loadedUsers);
+
+    let serialID = 1;
+
+    const handleDelete = id => {
+        console.log(id)
+        fetch(`http://localhost:5000/users/${id}`, {
+            method: 'DELETE'
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log(data);
+            if(data.deletedCount > 0 ){
+                const remainingUsers = users.filter(user => user._id !== id);
+                setUsers(remainingUsers);
+                
+                console.log("User deleted successfully!");
+            }
+        })
+    }
     return (
         <div>
             <div className="mt-20">
@@ -12,7 +36,7 @@ const Users = () => {
                 <div className="overflow-x-auto">
                     <table className="table">
                         {/* head */}
-                        <thead>
+                        <thead className="font-bold text-lg">
                             <tr>
                                 <th>ID</th>
                                 <th>Name</th>
@@ -24,17 +48,21 @@ const Users = () => {
                         </thead>
                         <tbody>
                             {/* row 1 */}
-                            <tr className="text-black">
-                                <th>1</th>
-                                <td>Cy Ganderton</td>
-                                <td>john@vaugn.com</td>
-                                <td>Blue</td>
-                                <td>Blue</td>
-                                <td>
-                                    <span className="btn rounded-none mr-2"><FaPencilAlt></FaPencilAlt></span>
-                                    <span className="btn rounded-none mr-2"><FaTimes></FaTimes></span>
-                                </td>
-                            </tr>                            
+                            {
+                                users.map(user =>
+                                    <tr key={user._id} className="text-black">
+                                        <th>{serialID++}</th>
+                                        <td>{user?.name}</td>
+                                        <td>{user?.email}</td>
+                                        <td>{user?.gender}</td>
+                                        <td>{user.status}</td>
+                                        <td>
+                                            <span className="btn rounded-none mr-2"><FaPencilAlt></FaPencilAlt></span>
+                                            <span onClick={() => handleDelete(user?._id)} className="btn rounded-none mr-2"><FaTimes></FaTimes></span>
+                                        </td>
+                                    </tr>)
+                            }
+
                         </tbody>
                     </table>
                 </div>

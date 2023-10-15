@@ -11,7 +11,7 @@ app.use(express.json()); // to parse the data from the requested body
 
 // mongodb database 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB__USER}:${process.env.DB__PASS}@cluster0.ddl1jzo.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -43,8 +43,14 @@ async function run() {
         res.send(processedUsers);
     })
 
-  
+    // delete api for a single specific user
+    app.delete('/users/:id', async (req, res)=>{
+        const id = req.params.id;
+        const query = {_id: new ObjectId(id)};
+        const deletedUser = await userManagementCollection.deleteOne(query);
+        res.send(deletedUser);
 
+    })
 
 
 

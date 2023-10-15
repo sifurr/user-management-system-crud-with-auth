@@ -10,7 +10,22 @@ const CreateUser = () => {
         const email = form.email.value;
         const gender = form.gender.value;
         const status = form.status.value;
-        console.log(name, email, gender, status);
+        const user = {name, email, gender, status}
+        console.log(user);
+
+        fetch(`http://localhost:5000/users`, {
+            method: 'POST',
+            headers: {'content-type': 'application/json'},
+            body: JSON.stringify(user)
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log(data)
+            if(data.insertedId){
+                console.log("User saved successfully!");
+                form.reset();
+            }
+        })
       
     }
     return (

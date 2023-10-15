@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import Users from './components/Users.jsx';
 import CreateUser from './components/CreateUser.jsx';
+import AuthProvider from './provider/AuthProvider.jsx';
 
 const router = createBrowserRouter([
   {
@@ -16,7 +17,8 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <Users></Users>
+        element: <Users></Users>,
+        loader: ()=> fetch(`http://localhost:5000/users`)
       },
       {
         path: '/create-user',
@@ -29,6 +31,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </React.StrictMode>,
 )
