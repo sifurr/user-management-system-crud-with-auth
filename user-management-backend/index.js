@@ -12,7 +12,7 @@ app.use(express.json()); // to parse the data from the requested body
 // mongodb database 
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://<username>:<password>@cluster0.ddl1jzo.mongodb.net/?retryWrites=true&w=majority";
+const uri = `mongodb+srv://${process.env.DB__USER}:${process.env.DB__PASS}@cluster0.ddl1jzo.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -27,11 +27,23 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
+    const userManagementCollection = client.db('userManagementSystemDB').collection('userManagementCollection');
     
-
-    app.get('/', (req, res) => {
-        res.send("I am the server!");
+    // post api for a single user
+    app.post('/users', async (req, res) => {
+        const newUserRequest = req.body;
+        const newUser = await userManagementCollection.insertOne(newUserRequest);
+        res.send(newUser);
     })
+
+    // get api for all users
+    app.get('/users', async (req, res)=>{
+        const cursor = userManagementCollection.find()
+        const processedUsers = await cursor.toArray();
+        res.send(processedUsers);
+    })
+
+  
 
 
 
